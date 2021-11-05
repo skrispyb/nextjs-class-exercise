@@ -1,10 +1,29 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
-import { people } from '../data/people'
 import Link from 'next/link'
+import { useEffect } from 'react'
+import useSWR from 'swr'
 
 export default function Home() {
+
+  // useEffect( () => {
+  //   const fetchdata = async () => {
+  //     const response = await fetch('/api/people')
+  //     const data = await response.json()
+  //     console.log("data", data)
+  //   }
+  //   fetchdata()
+  // }, [])
+
+  // replace above fetch with SWR
+
+  const { data, error } = useSWR('/api/people', (...args) => fetch(...args).then(res => res.json()))
+
+  if(!data) {
+    return <div>Loading...</div>
+  } else {
+
   return (
     <div className={styles.container}>
       <Head>
@@ -15,7 +34,7 @@ export default function Home() {
 
       <div>
         <ul>
-          {people.map(person => <li key={person.id}><Link href={`/person/${person.id}`}><a>{person.name}</a></Link></li>)}
+          {data.map(person => <li key={person.id}><Link href={`/person/${person.id}`}><a>{person.name}</a></Link></li>)}
         </ul>
       </div>
 
@@ -33,4 +52,5 @@ export default function Home() {
       </footer>
     </div>
   )
+  }
 }
